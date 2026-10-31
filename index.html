@@ -1,1 +1,676 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#090611">
+<meta name="description" content="A little adventure made especially for Ryza.">
+<title>A Little Adventure for Ryza</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #090611;
+  --purple: #8b35ff;
+  --violet: #c18aff;
+  --white: #f5edff;
+  --muted: #a99bbd;
+  --border: #563080;
+}
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background:
+    radial-gradient(ellipse at 50% 0%, #24103f 0%, transparent 55%),
+    var(--bg);
+  color: var(--white);
+  font-family: "Space Mono", monospace;
+  overflow-x: hidden;
+}
+
+#stars, #fireworks {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+#stars { z-index: 0; }
+#fireworks { z-index: 6; }
+
+.app {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 22px 17px 30px;
+}
+
+.topbar {
+  width: 100%;
+  max-width: 650px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 1px;
+  margin-bottom: 28px;
+}
+
+.status { color: #c58aff; }
+
+.music {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--violet);
+  font: inherit;
+  font-size: 10px;
+  padding: 9px 12px;
+  border-radius: 3px;
+}
+
+main {
+  width: 100%;
+  max-width: 650px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.screen {
+  display: none;
+  width: 100%;
+  animation: appear .55s ease both;
+}
+
+.screen.active { display: block; }
+
+@keyframes appear {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.panel {
+  background: linear-gradient(145deg, #191027, #0f0a19);
+  border: 1px solid var(--border);
+  box-shadow: 0 0 25px #802dff18, inset 0 0 30px #8b35ff08;
+  padding: clamp(20px, 5vw, 38px);
+  position: relative;
+}
+
+.panel::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 18px;
+  width: 65px;
+  height: 2px;
+  background: var(--violet);
+  box-shadow: 0 0 12px var(--purple);
+}
+
+.eyebrow {
+  color: var(--violet);
+  font-size: 10px;
+  letter-spacing: 2px;
+  margin-bottom: 25px;
+}
+
+.pixel-title {
+  font-family: "Press Start 2P", monospace;
+  font-size: clamp(19px, 5vw, 29px);
+  line-height: 1.8;
+  color: white;
+  text-shadow: 0 0 15px #a44dff80;
+  margin: 0 0 18px;
+}
+
+.subtitle {
+  color: var(--muted);
+  line-height: 1.9;
+  font-size: 13px;
+}
+
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), transparent);
+  margin: 27px 0;
+}
+
+.system-line {
+  font-size: 10px;
+  color: #9b80b9;
+  line-height: 2;
+}
+
+.action {
+  width: 100%;
+  min-height: 52px;
+  padding: 14px;
+  border: 1px solid var(--purple);
+  background: linear-gradient(100deg, #39136a, #6425a7);
+  color: white;
+  font-family: "Space Mono", monospace;
+  font-weight: bold;
+  font-size: 12px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  margin-top: 22px;
+  box-shadow: 0 0 17px #8b35ff25;
+  transition: .2s ease;
+}
+
+.action:active, .music:active {
+  transform: scale(.97);
+}
+
+.action:hover {
+  background: linear-gradient(100deg, #55208d, #843cff);
+  box-shadow: 0 0 25px #a44dff55;
+}
+
+.action.secondary {
+  background: #130d20;
+  border-color: #604080;
+  color: #d7c3ef;
+}
+
+.action:focus-visible, .music:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 4px;
+}
+
+.letter {
+  min-height: 230px;
+  max-height: 55vh;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  color: #e5d7f5;
+  line-height: 2;
+  font-size: 13px;
+  padding: 20px;
+  background: #090611;
+  border: 1px solid #3e285b;
+  box-shadow: inset 0 0 25px #8b35ff0c;
+}
+
+.letter-label {
+  color: var(--violet);
+  font-size: 10px;
+  margin-bottom: 12px;
+}
+
+.proposal { text-align: center; }
+
+.proposal .pixel-title {
+  font-size: clamp(19px, 5vw, 27px);
+  margin: 20px 0;
+}
+
+.gem {
+  font-size: 42px;
+  filter: drop-shadow(0 0 15px #a64cff);
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  50% { transform: translateY(-9px); }
+}
+
+.buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.buttons .action { margin: 0; }
+
+#noMessage {
+  min-height: 45px;
+  margin-top: 22px;
+  color: #d2aaff;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.counter {
+  font-size: 12px;
+  line-height: 2.1;
+  color: var(--violet);
+  text-align: center;
+}
+
+.counter strong {
+  font-size: 17px;
+  color: white;
+}
+
+.footer {
+  color: #756586;
+  font-size: 9px;
+  text-align: center;
+  padding-top: 24px;
+  letter-spacing: 1px;
+}
+
+#celebration {
+  display: none;
+  position: fixed;
+  z-index: 5;
+  inset: 0;
+  background: #090611ee;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+#celebration.show {
+  display: flex;
+  animation: appear .5s ease;
+}
+
+.celebrate-panel {
+  text-align: center;
+  width: 100%;
+  max-width: 500px;
+  padding: 35px 20px;
+  border: 1px solid var(--violet);
+  background: #160d25;
+  box-shadow: 0 0 45px #8b35ff55;
+}
+
+.celebrate-panel .pixel-title {
+  font-size: clamp(17px, 4.5vw, 25px);
+}
+
+.cat {
+  font-size: 42px;
+  margin: 20px;
+}
+
+@media (max-width: 380px) {
+  .pixel-title { font-size: 17px; }
+  .topbar { font-size: 8px; }
+  .buttons { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
+</style>
+</head>
+
+<body>
+<canvas id="stars"></canvas>
+<canvas id="fireworks"></canvas>
+
+<div class="app">
+  <header class="topbar">
+    <span>RYZA.EXE <span class="status">● ONLINE</span></span>
+    <button class="music" id="musicButton" type="button">♫ MUSIC: OFF</button>
+  </header>
+
+  <main>
+
+    <!-- SCREEN 1: WELCOME -->
+    <section class="screen active" id="welcome">
+      <div class="panel">
+        <div class="eyebrow">✦ PERSONAL QUEST / 001</div>
+
+        <h1 class="pixel-title">A Little Adventure...</h1>
+
+        <p class="subtitle">
+          Some things deserve more than an ordinary message.
+          So I decided to create this little place just for you.
+        </p>
+
+        <div class="divider"></div>
+
+        <p class="system-line">
+          [ SYSTEM ] New quest detected.<br>
+          [ PLAYER ] Ryza<br>
+          [ LOCATION ] Somewhere special.<br>
+          [ OBJECTIVE ] Discover what awaits at the end.
+        </p>
+
+        <button class="action" onclick="goTo('letter')">
+          START ADVENTURE ▶
+        </button>
+      </div>
+    </section>
+
+    <!-- SCREEN 2: PERSONAL LETTER -->
+    <section class="screen" id="letter">
+      <div class="panel">
+        <div class="eyebrow">✦ QUEST LOG / PERSONAL MESSAGE</div>
+
+        <h2 class="pixel-title">For Ryza</h2>
+
+        <div class="letter-label">FILE: letter_for_ryza.txt</div>
+
+        <div class="letter" id="letterContent">Hey, sweetie. I know you probably think I’m at the party (which is true), but before that, I put together this little project for you. I know we haven’t known each other or been talking for very long, but you are for me a sweet, beautiful, and energetic person, and so much more; I honestly run out of words to fully describe you. I also know you’re a little bit scared, a little coward, but the truth is, I’ve been wanting to do this for a while now. I don’t know if you feel or think the same way about me, though I certainly hope you do (I don't want you to avoid me like a weirdo tbh). I love you so much, Ryza. I wanna ask if you would like to be my partner officially.</div>
+
+        <div class="divider"></div>
+
+        <p class="system-line">
+          [ SYSTEM ] End of personal message.
+        </p>
+
+        <button class="action" onclick="goTo('proposal')">
+          CONTINUE ▶
+        </button>
+
+        <button class="action secondary" onclick="goTo('welcome')">
+          ◀ GO BACK
+        </button>
+      </div>
+    </section>
+
+    <!-- SCREEN 3: THE QUESTION -->
+    <section class="screen" id="proposal">
+      <div class="panel proposal">
+        <div class="eyebrow">✦ FINAL QUEST / THE QUESTION</div>
+
+        <div class="gem">◆</div>
+
+        <h2 class="pixel-title">Will You Be My Girlfriend?</h2>
+
+        <p class="subtitle">
+          I don't know what the next chapters will look like,
+          but I'd love to discover them with you.
+        </p>
+
+        <div class="divider"></div>
+
+        <div class="buttons">
+          <button class="action" onclick="sayYes()">
+            ♥ YES
+          </button>
+
+          <button class="action secondary" onclick="sayNo()">
+            NO
+          </button>
+        </div>
+
+        <div id="noMessage" aria-live="polite"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <div class="counter" id="counter">
+    <div>✦ TIME SINCE WE MET ✦</div>
+    <strong id="timeTogether">-- days</strong>
+  </div>
+
+  <footer class="footer">
+    DESIGNED WITH ♥ FOR RYZA · END OF TRANSMISSION
+  </footer>
+</div>
+
+<!-- CELEBRATION -->
+<div id="celebration">
+  <div class="celebrate-panel">
+    <div class="eyebrow">✦ QUEST COMPLETED ✦</div>
+    <div class="cat">🐈‍⬛ 💜 🐈</div>
+    <h2 class="pixel-title">QUEST COMPLETED!</h2>
+    <p class="subtitle">
+      Looks like a brand-new adventure is about to begin.
+    </p>
+    <p class="system-line">[ STATUS ] NEW CHAPTER UNLOCKED</p>
+  </div>
+</div>
+
+<!-- Add piano.mp3 next to index.html -->
+<audio id="piano" loop preload="none">
+  <source src="piano.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+// ======================================
+// PERSONAL SETTINGS
+// ======================================
+
+// Set the actual date you first met.
+// Format: YEAR, MONTH (0 = January), DAY.
+const meetingDate = new Date(2026, 8, 20);
+
+// ======================================
+// NAVIGATION
+// ======================================
+
+function goTo(screenId) {
+  document.querySelectorAll(".screen").forEach(screen => {
+    screen.classList.remove("active");
+  });
+
+  document.getElementById(screenId).classList.add("active");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+// ======================================
+// TIME SINCE WE MET
+// ======================================
+
+function updateCounter() {
+  const now = new Date();
+  const difference = Math.max(0, now - meetingDate);
+
+  const days = Math.floor(difference / 86400000);
+  const hours = Math.floor((difference / 3600000) % 24);
+  const minutes = Math.floor((difference / 60000) % 60);
+  const seconds = Math.floor((difference / 1000) % 60);
+
+  document.getElementById("timeTogether").textContent =
+    `${days} days · ${hours}h ${minutes}m ${seconds}s`;
+}
+
+updateCounter();
+setInterval(updateCounter, 1000);
+
+// ======================================
+// NO BUTTON
+// ======================================
+
+const noMessages = [
+  "Are you sure? You can take your time. 💜",
+  "That wasn't the answer I was hoping for, haha.",
+  "Well... you can still think about it.",
+  "This adventure can wait a little. ✦",
+  "Maybe you'd like to read the letter again?"
+];
+
+let noIndex = 0;
+
+function sayNo() {
+  const message = noMessages[noIndex % noMessages.length];
+  document.getElementById("noMessage").textContent = message;
+  noIndex++;
+}
+
+// ======================================
+// YES BUTTON
+// ======================================
+
+function sayYes() {
+  document.getElementById("celebration").classList.add("show");
+  launchFireworks();
+}
+
+// ======================================
+// MUSIC
+// ======================================
+
+const piano = document.getElementById("piano");
+const musicButton = document.getElementById("musicButton");
+
+let musicPlaying = false;
+
+musicButton.addEventListener("click", async () => {
+  if (!musicPlaying) {
+    try {
+      await piano.play();
+      musicPlaying = true;
+      musicButton.textContent = "♫ MUSIC: ON";
+    } catch (error) {
+      musicButton.textContent = "MUSIC FILE NOT FOUND";
+    }
+  } else {
+    piano.pause();
+    musicPlaying = false;
+    musicButton.textContent = "♫ MUSIC: OFF";
+  }
+});
+
+// ======================================
+// PIXEL STAR BACKGROUND
+// ======================================
+
+const starsCanvas = document.getElementById("stars");
+const starsCtx = starsCanvas.getContext("2d");
+let stars = [];
+
+function resizeStars() {
+  const ratio = Math.min(window.devicePixelRatio || 1, 2);
+
+  starsCanvas.width = innerWidth * ratio;
+  starsCanvas.height = innerHeight * ratio;
+  starsCanvas.style.width = innerWidth + "px";
+  starsCanvas.style.height = innerHeight + "px";
+
+  starsCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+  stars = Array.from({ length: 75 }, () => ({
+    x: Math.random() * innerWidth,
+    y: Math.random() * innerHeight,
+    size: Math.random() * 1.7 + .5,
+    alpha: Math.random() * .7 + .2
+  }));
+}
+
+function drawStars() {
+  starsCtx.clearRect(0, 0, innerWidth, innerHeight);
+
+  stars.forEach(star => {
+    starsCtx.fillStyle = `rgba(202,160,255,${star.alpha})`;
+    starsCtx.fillRect(star.x, star.y, star.size, star.size);
+  });
+
+  requestAnimationFrame(drawStars);
+}
+
+resizeStars();
+drawStars();
+window.addEventListener("resize", resizeStars);
+
+// ======================================
+// PIXEL FIREWORKS
+// ======================================
+
+const fireCanvas = document.getElementById("fireworks");
+const fireCtx = fireCanvas.getContext("2d");
+let particles = [];
+let fireworksActive = false;
+
+function resizeFireworks() {
+  const ratio = Math.min(window.devicePixelRatio || 1, 2);
+
+  fireCanvas.width = innerWidth * ratio;
+  fireCanvas.height = innerHeight * ratio;
+  fireCanvas.style.width = innerWidth + "px";
+  fireCanvas.style.height = innerHeight + "px";
+
+  fireCtx.setTransform(ratio, 0, 0, ratio, 0, 0);
+}
+
+resizeFireworks();
+window.addEventListener("resize", resizeFireworks);
+
+function explode(x, y) {
+  for (let i = 0; i < 28; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = Math.random() * 3 + 1;
+
+    particles.push({
+      x, y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      life: 1,
+      size: Math.random() * 3 + 1
+    });
+  }
+}
+
+function launchFireworks() {
+  if (fireworksActive) return;
+  fireworksActive = true;
+
+  let count = 0;
+
+  const interval = setInterval(() => {
+    explode(
+      Math.random() * innerWidth,
+      Math.random() * innerHeight * .7
+    );
+
+    count++;
+
+    if (count >= 9) {
+      clearInterval(interval);
+      fireworksActive = false;
+    }
+  }, 400);
+
+  animateFireworks();
+}
+
+function animateFireworks() {
+  if (!fireworksActive && particles.length === 0) return;
+
+  fireCtx.clearRect(0, 0, innerWidth, innerHeight);
+
+  particles.forEach(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += .025;
+    p.life -= .012;
+
+    fireCtx.globalAlpha = Math.max(0, p.life);
+    fireCtx.fillStyle = "#c18aff";
+    fireCtx.fillRect(p.x, p.y, p.size, p.size);
+  });
+
+  fireCtx.globalAlpha = 1;
+  particles = particles.filter(p => p.life > 0);
+
+  if (particles.length > 0 || fireworksActive) {
+    requestAnimationFrame(animateFireworks);
+  }
+}
+</script>
+</body>
+</html>
+
